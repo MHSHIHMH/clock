@@ -60,9 +60,9 @@
     <label>Taipei 字體:
       <select id="taipeiFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
     </label>
-    <label>Chicago 色: <input type="color" id="chicagoColor" value="#00FFCC"></label>
-    <label>Chicago 字體:
-      <select id="chicagoFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
+    <label>New York 色: <input type="color" id="newyorkColor" value="#00FFCC"></label>
+    <label>New York 字體:
+      <select id="newyorkFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
     </label>
     <label>London 色: <input type="color" id="londonColor" value="#00FFCC"></label>
     <label>London 字體:
@@ -78,7 +78,7 @@
 
   <div class="clock-container">
     <div class="time-box"><div class="city" id="taipeiLabel">Taipei</div><div id="taipei" class="time">--:--:--</div></div>
-    <div class="time-box"><div class="city" id="chicagoLabel">Chicago</div><div id="chicago" class="time">--:--:--</div></div>
+    <div class="time-box"><div class="city" id="newyorkLabel">New York</div><div id="newyork" class="time">--:--:--</div></div>
     <div class="time-box"><div class="city" id="londonLabel">London</div><div id="london" class="time">--:--:--</div></div>
   </div>
 
@@ -86,80 +86,13 @@
     function updateTime() {
       const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
       document.getElementById('taipei').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'Asia/Taipei' });
-      document.getElementById('chicago').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'America/Chicago' });
+      document.getElementById('newyork').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'America/New_York' });
       document.getElementById('london').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'Europe/London' });
     }
 
     setInterval(updateTime, 1000);
     updateTime();
 
-    const bgColorInput = document.getElementById('bgColor');
-    const textColorInput = document.getElementById('textColor');
-    const fontSizeInput = document.getElementById('fontSize');
-    const gapSizeInput = document.getElementById('gapSize');
-    const taipeiLabel = document.getElementById('taipeiLabel');
-    const chicagoLabel = document.getElementById('chicagoLabel');
-    const londonLabel = document.getElementById('londonLabel');
-    const timeBoxes = document.querySelectorAll('.time-box');
-
-    function applySettings() {
-      const textColor = textColorInput.value;
-      const fontSize = fontSizeInput.value + 'px';
-      const gap = gapSizeInput.value + 'px';
-
-      document.body.style.backgroundColor = bgColorInput.value;
-      document.body.style.color = textColor;
-      document.querySelectorAll('.time').forEach(t => {
-        t.style.fontSize = fontSize;
-        t.style.color = textColor;
-      });
-      timeBoxes.forEach(t => t.style.margin = '0 ' + gap);
-
-      taipeiLabel.style.color = document.getElementById('taipeiColor').value;
-      taipeiLabel.style.fontFamily = document.getElementById('taipeiFont').value;
-
-      chicagoLabel.style.color = document.getElementById('chicagoColor').value;
-      chicagoLabel.style.fontFamily = document.getElementById('chicagoFont').value;
-
-      londonLabel.style.color = document.getElementById('londonColor').value;
-      londonLabel.style.fontFamily = document.getElementById('londonFont').value;
-      londonLabel.style.fontWeight = document.getElementById('londonWeight').value;
-
-      localStorage.setItem('clockSettings', JSON.stringify({
-        bg: bgColorInput.value,
-        text: textColorInput.value,
-        fontSize: fontSizeInput.value,
-        gap: gapSizeInput.value,
-        taipeiColor: document.getElementById('taipeiColor').value,
-        taipeiFont: document.getElementById('taipeiFont').value,
-        chicagoColor: document.getElementById('chicagoColor').value,
-        chicagoFont: document.getElementById('chicagoFont').value,
-        londonColor: document.getElementById('londonColor').value,
-        londonFont: document.getElementById('londonFont').value,
-        londonWeight: document.getElementById('londonWeight').value
-      }));
-    }
-
-    document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', applySettings));
-
-    window.onload = () => {
-      const saved = JSON.parse(localStorage.getItem('clockSettings') || '{}');
-      if (saved.bg) {
-        bgColorInput.value = saved.bg;
-        textColorInput.value = saved.text;
-        fontSizeInput.value = saved.fontSize;
-        gapSizeInput.value = saved.gap;
-        document.getElementById('taipeiColor').value = saved.taipeiColor;
-        document.getElementById('taipeiFont').value = saved.taipeiFont;
-        document.getElementById('chicagoColor').value = saved.chicagoColor;
-        document.getElementById('chicagoFont').value = saved.chicagoFont;
-        document.getElementById('londonColor').value = saved.londonColor;
-        document.getElementById('londonFont').value = saved.londonFont;
-        document.getElementById('londonWeight').value = saved.londonWeight;
-        applySettings();
-      }
-    }
-  
     function toggleFullscreen() {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen();
