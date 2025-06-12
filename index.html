@@ -1,97 +1,178 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Timezone Clock</title>
+  <meta charset="UTF-8">
+  <title>三時區電子時鐘</title>
   <style>
     :root {
-      --bg-color: #111;
-      --city-color: #ccc;
-      --time-color: #fff;
-      --font-size-city: 1.5rem;
-      --font-size-time: 2.5rem;
-      --font-weight-city: 600;
-      --font-weight-time: 700;
-      --gap: 50px;
-    }body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  background-color: var(--bg-color);
-  color: var(--time-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+      --bg-color: #1e1e1e;
+      --font-color: #ffffff;
+      --city-font-size: 24px;
+      --time-font-size: 48px;
+      --font-weight: bold;
+      --gap: 60px;
+    }
 
-.clock-container {
-  display: flex;
-  gap: var(--gap);
-}
+    body {
+      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
 
-.clock {
-  text-align: center;
-}
+    .clock-container {
+      display: flex;
+      gap: var(--gap);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-.city {
-  font-size: var(--font-size-city);
-  font-weight: var(--font-weight-city);
-  color: var(--city-color);
-}
+    .clock {
+      text-align: center;
+    }
 
-.time {
-  font-size: var(--font-size-time);
-  font-weight: var(--font-weight-time);
-  color: var(--time-color);
-}
+    .city {
+      font-size: var(--city-font-size);
+      font-weight: var(--font-weight);
+      margin-bottom: 10px;
+    }
 
-#controls {
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  z-index: 999;
-}
+    .time {
+      font-size: var(--time-font-size);
+      letter-spacing: 2px;
+    }
 
-#controls.hidden {
-  display: none;
-}
+    #controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
 
+    label, input, select {
+      color: #000;
+      margin: 2px;
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="clock-container">
     <div class="clock">
-      <div class="city">Taipei</div>
-      <div class="time" id="taipei-time"></div>
+      <div class="city" id="city-taipei">Taipei</div>
+      <div class="time" id="taipei-time">--:--:--</div>
     </div>
     <div class="clock">
-      <div class="city">New York</div>
-      <div class="time" id="newyork-time"></div>
+      <div class="city" id="city-ny">New York</div>
+      <div class="time" id="newyork-time">--:--:--</div>
     </div>
     <div class="clock">
-      <div class="city">London</div>
-      <div class="time" id="london-time"></div>
+      <div class="city" id="city-london">London</div>
+      <div class="time" id="london-time">--:--:--</div>
     </div>
-  </div> <div id="controls">
-    <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
-    <button onclick="toggleControls()">Toggle Controls</button>
-    <!-- Add sliders or input fields here for customization -->
-  </div> <script>
-    const taipeiOffset = 8;
-    const newYorkOffset = -4; // Adjust for DST if needed
-    const londonOffset = 1; // Adjust for DST if needed
+  </div>
 
-    function updateClock() {
+  <div id="controls">
+    <button onclick="toggleFullscreen()">切換全螢幕</button>
+    <button onclick="togglePanel()">隱藏/顯示控制面板</button>
+    <div id="settings">
+      <label>時間字體大小: <input type="range" min="20" max="100" value="48" onchange="setTimeFontSize(this.value)"></label>
+      <label>城市字體大小: <input type="range" min="10" max="50" value="24" onchange="setCityFontSize(this.value)"></label>
+      <label>字體粗細:
+        <select onchange="setFontWeight(this.value)">
+          <option value="normal">正常</option>
+          <option value="bold" selected>粗體</option>
+        </select>
+      </label>
+      <label>背景顏色: <input type="color" onchange="setBgColor(this.value)"></label>
+      <label>字體顏色: <input type="color" onchange="setFontColor(this.value)"></label>
+      <label>時區間距: <input type="range" min="10" max="200" value="60" onchange="setGap(this.value)"></label>
+    </div>
+  </div>
+
+  <script>
+    function updateClocks() {
       const now = new Date();
-      document.getElementById('taipei-time').textContent = getTimeForOffset(now, taipeiOffset);
-      document.getElementById('newyork-time').textContent = getTimeForOffset(now, newYorkOffset);
-      document.getElementById('london-time').textContent = getTimeForOffset(now, londonOffset);
+
+      const taipeiTime = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Taipei', hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).format(now);
+      const newYorkTime = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).format(now);
+      const londonTime = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).format(now);
+
+      document.getElementById('taipei-time').textContent = taipeiTime;
+      document.getElementById('newyork-time').textContent = newYorkTime;
+      document.getElementById('london-time').textContent = londonTime;
     }
 
-    function getTimeForOffset(baseTime, offset) {
-      const utc = baseTime.getTime() + baseTime.getTimezoneOffset() * 60000;
-      const time = new Date
+    setInterval(updateClocks, 1000);
+    updateClocks();
+
+    function setTimeFontSize(value) {
+      document.documentElement.style.setProperty('--time-font-size', value + 'px');
+      localStorage.setItem('timeFontSize', value);
+    }
+
+    function setCityFontSize(value) {
+      document.documentElement.style.setProperty('--city-font-size', value + 'px');
+      localStorage.setItem('cityFontSize', value);
+    }
+
+    function setFontWeight(value) {
+      document.documentElement.style.setProperty('--font-weight', value);
+      localStorage.setItem('fontWeight', value);
+    }
+
+    function setBgColor(value) {
+      document.documentElement.style.setProperty('--bg-color', value);
+      localStorage.setItem('bgColor', value);
+    }
+
+    function setFontColor(value) {
+      document.documentElement.style.setProperty('--font-color', value);
+      localStorage.setItem('fontColor', value);
+    }
+
+    function setGap(value) {
+      document.documentElement.style.setProperty('--gap', value + 'px');
+      localStorage.setItem('gap', value);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function togglePanel() {
+      const panel = document.getElementById('settings');
+      panel.classList.toggle('hidden');
+    }
+
+    // 載入儲存設定
+    window.onload = () => {
+      if (localStorage.timeFontSize) setTimeFontSize(localStorage.timeFontSize);
+      if (localStorage.cityFontSize) setCityFontSize(localStorage.cityFontSize);
+      if (localStorage.fontWeight) setFontWeight(localStorage.fontWeight);
+      if (localStorage.bgColor) setBgColor(localStorage.bgColor);
+      if (localStorage.fontColor) setFontColor(localStorage.fontColor);
+      if (localStorage.gap) setGap(localStorage.gap);
+    }
+  </script>
+</body>
+</html>
