@@ -1,9 +1,13 @@
-# Dual Timezone Clock – GitHub Pages
+# Triple Timezone Clock (Taipei, Chicago, London)
 
-Now includes:
-- Custom region font-family per city
-- Adjustable spacing, colors, sizes, and fonts
-- Saved settings using localStorage
+Features:
+- Realtime clock with seconds
+- Independent font, color, and font-weight for each city
+- Adjustable spacing and background
+- Saves your settings with localStorage
+- Ready for GitHub Pages
 
-To deploy, upload to GitHub and enable Pages in Settings.
-Visit `https://yourusername.github.io/your-repo-name/`.
+Deploy:
+1. Upload index.html to a GitHub repo
+2. Enable Pages (Settings > Pages > Source: main branch / root)
+3. Visit: https://yourusername.github.io/repo-name/

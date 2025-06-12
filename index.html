@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom Dual Clock</title>
+  <title>Triple Time Clock</title>
   <style>
     html, body {
       margin: 0;
@@ -16,28 +15,22 @@
       justify-content: center;
       align-items: center;
       font-family: 'Arial', sans-serif;
-      transition: background-color 0.3s, color 0.3s;
     }
-
     .clock-container {
       display: flex;
       flex-wrap: wrap;
     }
-
     .time-box {
       text-align: center;
       margin: 0 50px;
     }
-
     .city {
       font-size: 2rem;
       margin-bottom: 0.5rem;
     }
-
     .time {
       font-weight: bold;
     }
-
     .controls {
       position: absolute;
       top: 10px;
@@ -49,19 +42,12 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-
     .controls label {
       font-size: 12px;
       color: #fff;
     }
-
     .hidden {
       display: none;
-    }
-
-    button {
-      padding: 5px 10px;
-      font-size: 12px;
     }
   </style>
 </head>
@@ -72,36 +58,26 @@
     <label>大小(px): <input type="number" id="fontSize" value="64" min="10" max="200"></label>
     <label>Taipei 色: <input type="color" id="taipeiColor" value="#00FFCC"></label>
     <label>Taipei 字體:
-      <select id="taipeiFont">
-        <option value="Arial">Arial</option>
-        <option value="Courier New">Courier New</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Verdana">Verdana</option>
-      </select>
+      <select id="taipeiFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
     </label>
     <label>Chicago 色: <input type="color" id="chicagoColor" value="#00FFCC"></label>
     <label>Chicago 字體:
-      <select id="chicagoFont">
-        <option value="Arial">Arial</option>
-        <option value="Courier New">Courier New</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Verdana">Verdana</option>
-      </select>
+      <select id="chicagoFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
+    </label>
+    <label>London 色: <input type="color" id="londonColor" value="#00FFCC"></label>
+    <label>London 字體:
+      <select id="londonFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
+    </label>
+    <label>London 粗細:
+      <select id="londonWeight"><option>normal</option><option>bold</option><option>lighter</option></select>
     </label>
     <label>間距(px): <input type="number" id="gapSize" value="100" min="0" max="500"></label>
-    <button id="toggleFullscreen">切換全螢幕</button>
-    <button id="toggleUI">顯示/隱藏設定</button>
   </div>
 
   <div class="clock-container">
-    <div class="time-box">
-      <div class="city" id="taipeiLabel">Taipei</div>
-      <div id="taipei" class="time">--:--:--</div>
-    </div>
-    <div class="time-box">
-      <div class="city" id="chicagoLabel">Chicago</div>
-      <div id="chicago" class="time">--:--:--</div>
-    </div>
+    <div class="time-box"><div class="city" id="taipeiLabel">Taipei</div><div id="taipei" class="time">--:--:--</div></div>
+    <div class="time-box"><div class="city" id="chicagoLabel">Chicago</div><div id="chicago" class="time">--:--:--</div></div>
+    <div class="time-box"><div class="city" id="londonLabel">London</div><div id="london" class="time">--:--:--</div></div>
   </div>
 
   <script>
@@ -109,6 +85,7 @@
       const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
       document.getElementById('taipei').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'Asia/Taipei' });
       document.getElementById('chicago').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'America/Chicago' });
+      document.getElementById('london').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'Europe/London' });
     }
 
     setInterval(updateTime, 1000);
@@ -117,83 +94,69 @@
     const bgColorInput = document.getElementById('bgColor');
     const textColorInput = document.getElementById('textColor');
     const fontSizeInput = document.getElementById('fontSize');
-    const taipeiColorInput = document.getElementById('taipeiColor');
-    const chicagoColorInput = document.getElementById('chicagoColor');
     const gapSizeInput = document.getElementById('gapSize');
-    const taipeiFontInput = document.getElementById('taipeiFont');
-    const chicagoFontInput = document.getElementById('chicagoFont');
-
-    const taipeiTime = document.getElementById('taipei');
-    const chicagoTime = document.getElementById('chicago');
     const taipeiLabel = document.getElementById('taipeiLabel');
     const chicagoLabel = document.getElementById('chicagoLabel');
+    const londonLabel = document.getElementById('londonLabel');
     const timeBoxes = document.querySelectorAll('.time-box');
 
-    function updateStyleAndSave() {
-      const bg = bgColorInput.value;
-      const text = textColorInput.value;
-      const size = fontSizeInput.value;
-      const taipeiColor = taipeiColorInput.value;
-      const chicagoColor = chicagoColorInput.value;
-      const taipeiFont = taipeiFontInput.value;
-      const chicagoFont = chicagoFontInput.value;
-      const gap = gapSizeInput.value;
+    function applySettings() {
+      const textColor = textColorInput.value;
+      const fontSize = fontSizeInput.value + 'px';
+      const gap = gapSizeInput.value + 'px';
 
-      document.body.style.backgroundColor = bg;
-      document.body.style.color = text;
-      taipeiTime.style.fontSize = chicagoTime.style.fontSize = size + 'px';
-      taipeiTime.style.color = text;
-      chicagoTime.style.color = text;
-      taipeiLabel.style.color = taipeiColor;
-      chicagoLabel.style.color = chicagoColor;
-      taipeiLabel.style.fontFamily = taipeiFont;
-      chicagoLabel.style.fontFamily = chicagoFont;
-
-      timeBoxes.forEach(box => {
-        box.style.margin = `0 ${gap}px`;
+      document.body.style.backgroundColor = bgColorInput.value;
+      document.body.style.color = textColor;
+      document.querySelectorAll('.time').forEach(t => {
+        t.style.fontSize = fontSize;
+        t.style.color = textColor;
       });
+      timeBoxes.forEach(t => t.style.margin = '0 ' + gap);
 
-      localStorage.setItem('clockSettings', JSON.stringify({ bg, text, size, taipeiColor, chicagoColor, taipeiFont, chicagoFont, gap }));
+      taipeiLabel.style.color = document.getElementById('taipeiColor').value;
+      taipeiLabel.style.fontFamily = document.getElementById('taipeiFont').value;
+
+      chicagoLabel.style.color = document.getElementById('chicagoColor').value;
+      chicagoLabel.style.fontFamily = document.getElementById('chicagoFont').value;
+
+      londonLabel.style.color = document.getElementById('londonColor').value;
+      londonLabel.style.fontFamily = document.getElementById('londonFont').value;
+      londonLabel.style.fontWeight = document.getElementById('londonWeight').value;
+
+      localStorage.setItem('clockSettings', JSON.stringify({
+        bg: bgColorInput.value,
+        text: textColorInput.value,
+        fontSize: fontSizeInput.value,
+        gap: gapSizeInput.value,
+        taipeiColor: document.getElementById('taipeiColor').value,
+        taipeiFont: document.getElementById('taipeiFont').value,
+        chicagoColor: document.getElementById('chicagoColor').value,
+        chicagoFont: document.getElementById('chicagoFont').value,
+        londonColor: document.getElementById('londonColor').value,
+        londonFont: document.getElementById('londonFont').value,
+        londonWeight: document.getElementById('londonWeight').value
+      }));
     }
 
-    function loadSavedSettings() {
-      const saved = localStorage.getItem('clockSettings');
-      if (saved) {
-        const { bg, text, size, taipeiColor, chicagoColor, taipeiFont, chicagoFont, gap } = JSON.parse(saved);
-        bgColorInput.value = bg;
-        textColorInput.value = text;
-        fontSizeInput.value = size;
-        taipeiColorInput.value = taipeiColor;
-        chicagoColorInput.value = chicagoColor;
-        taipeiFontInput.value = taipeiFont;
-        chicagoFontInput.value = chicagoFont;
-        gapSizeInput.value = gap;
-        updateStyleAndSave();
+    document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', applySettings));
+
+    window.onload = () => {
+      const saved = JSON.parse(localStorage.getItem('clockSettings') || '{}');
+      if (saved.bg) {
+        bgColorInput.value = saved.bg;
+        textColorInput.value = saved.text;
+        fontSizeInput.value = saved.fontSize;
+        gapSizeInput.value = saved.gap;
+        document.getElementById('taipeiColor').value = saved.taipeiColor;
+        document.getElementById('taipeiFont').value = saved.taipeiFont;
+        document.getElementById('chicagoColor').value = saved.chicagoColor;
+        document.getElementById('chicagoFont').value = saved.chicagoFont;
+        document.getElementById('londonColor').value = saved.londonColor;
+        document.getElementById('londonFont').value = saved.londonFont;
+        document.getElementById('londonWeight').value = saved.londonWeight;
+        applySettings();
       }
     }
-
-    bgColorInput.addEventListener('input', updateStyleAndSave);
-    textColorInput.addEventListener('input', updateStyleAndSave);
-    fontSizeInput.addEventListener('input', updateStyleAndSave);
-    taipeiColorInput.addEventListener('input', updateStyleAndSave);
-    chicagoColorInput.addEventListener('input', updateStyleAndSave);
-    taipeiFontInput.addEventListener('input', updateStyleAndSave);
-    chicagoFontInput.addEventListener('input', updateStyleAndSave);
-    gapSizeInput.addEventListener('input', updateStyleAndSave);
-
-    loadSavedSettings();
-
-    document.getElementById('toggleFullscreen').addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    });
-
-    document.getElementById('toggleUI').addEventListener('click', () => {
-      document.getElementById('controls').classList.toggle('hidden');
-    });
   </script>
 </body>
 </html>
