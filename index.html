@@ -67,29 +67,33 @@
 </head>
 <body>
   <div class="controls" id="controls">
-    <label>背景:
-      <input type="color" id="bgColor" value="#000000">
+    <label>背景: <input type="color" id="bgColor" value="#000000"></label>
+    <label>文字: <input type="color" id="textColor" value="#00FFCC"></label>
+    <label>大小(px): <input type="number" id="fontSize" value="64" min="10" max="200"></label>
+    <label>Taipei 色: <input type="color" id="taipeiColor" value="#00FFCC"></label>
+    <label>Taipei 字體:
+      <select id="taipeiFont">
+        <option value="Arial">Arial</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Verdana">Verdana</option>
+      </select>
     </label>
-    <label>文字:
-      <input type="color" id="textColor" value="#00FFCC">
+    <label>Chicago 色: <input type="color" id="chicagoColor" value="#00FFCC"></label>
+    <label>Chicago 字體:
+      <select id="chicagoFont">
+        <option value="Arial">Arial</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Verdana">Verdana</option>
+      </select>
     </label>
-    <label>大小(px):
-      <input type="number" id="fontSize" value="64" min="10" max="200">
-    </label>
-    <label>Taipei 色:
-      <input type="color" id="taipeiColor" value="#00FFCC">
-    </label>
-    <label>Chicago 色:
-      <input type="color" id="chicagoColor" value="#00FFCC">
-    </label>
-    <label>間距(px):
-      <input type="number" id="gapSize" value="100" min="0" max="500">
-    </label>
+    <label>間距(px): <input type="number" id="gapSize" value="100" min="0" max="500"></label>
     <button id="toggleFullscreen">切換全螢幕</button>
     <button id="toggleUI">顯示/隱藏設定</button>
   </div>
 
-  <div class="clock-container" id="clockContainer">
+  <div class="clock-container">
     <div class="time-box">
       <div class="city" id="taipeiLabel">Taipei</div>
       <div id="taipei" class="time">--:--:--</div>
@@ -116,6 +120,9 @@
     const taipeiColorInput = document.getElementById('taipeiColor');
     const chicagoColorInput = document.getElementById('chicagoColor');
     const gapSizeInput = document.getElementById('gapSize');
+    const taipeiFontInput = document.getElementById('taipeiFont');
+    const chicagoFontInput = document.getElementById('chicagoFont');
+
     const taipeiTime = document.getElementById('taipei');
     const chicagoTime = document.getElementById('chicago');
     const taipeiLabel = document.getElementById('taipeiLabel');
@@ -128,6 +135,8 @@
       const size = fontSizeInput.value;
       const taipeiColor = taipeiColorInput.value;
       const chicagoColor = chicagoColorInput.value;
+      const taipeiFont = taipeiFontInput.value;
+      const chicagoFont = chicagoFontInput.value;
       const gap = gapSizeInput.value;
 
       document.body.style.backgroundColor = bg;
@@ -137,23 +146,27 @@
       chicagoTime.style.color = text;
       taipeiLabel.style.color = taipeiColor;
       chicagoLabel.style.color = chicagoColor;
+      taipeiLabel.style.fontFamily = taipeiFont;
+      chicagoLabel.style.fontFamily = chicagoFont;
 
       timeBoxes.forEach(box => {
         box.style.margin = `0 ${gap}px`;
       });
 
-      localStorage.setItem('clockSettings', JSON.stringify({ bg, text, size, taipeiColor, chicagoColor, gap }));
+      localStorage.setItem('clockSettings', JSON.stringify({ bg, text, size, taipeiColor, chicagoColor, taipeiFont, chicagoFont, gap }));
     }
 
     function loadSavedSettings() {
       const saved = localStorage.getItem('clockSettings');
       if (saved) {
-        const { bg, text, size, taipeiColor, chicagoColor, gap } = JSON.parse(saved);
+        const { bg, text, size, taipeiColor, chicagoColor, taipeiFont, chicagoFont, gap } = JSON.parse(saved);
         bgColorInput.value = bg;
         textColorInput.value = text;
         fontSizeInput.value = size;
         taipeiColorInput.value = taipeiColor;
         chicagoColorInput.value = chicagoColor;
+        taipeiFontInput.value = taipeiFont;
+        chicagoFontInput.value = chicagoFont;
         gapSizeInput.value = gap;
         updateStyleAndSave();
       }
@@ -164,6 +177,8 @@
     fontSizeInput.addEventListener('input', updateStyleAndSave);
     taipeiColorInput.addEventListener('input', updateStyleAndSave);
     chicagoColorInput.addEventListener('input', updateStyleAndSave);
+    taipeiFontInput.addEventListener('input', updateStyleAndSave);
+    chicagoFontInput.addEventListener('input', updateStyleAndSave);
     gapSizeInput.addEventListener('input', updateStyleAndSave);
 
     loadSavedSettings();
