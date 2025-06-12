@@ -1,117 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Triple Time Clock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Timezone Clock</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background-color: #000;
-      color: #00FFCC;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Arial', sans-serif;
-    }
-    .clock-container {
-      display: flex;
-      flex-wrap: wrap;
-    }
-    .time-box {
-      text-align: center;
-      margin: 0 50px;
-    }
-    .city {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    .time {
-      font-weight: bold;
-    }
-    .controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0,0,0,0.5);
-      padding: 10px;
-      border-radius: 8px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .controls label {
-      font-size: 12px;
-      color: #fff;
-    }
-    .hidden {
-      display: none;
-    }
+    :root {
+      --bg-color: #000;
+      --font-color: #fff;
+      --font-size-taipei: 48px;
+      --font-size-ny: 48px;
+      --font-size-london: 48px;
+      --spacing-taipei: 20px;
+      --spacing-ny: 20px;
+      --spacing-london: 20px;
+      --city-font: 'Arial';
+      --city-font-weight: 400;
+    }body {
+  margin: 0;
+  background-color: var(--bg-color);
+  color: var(--font-color);
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.panel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.clock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+}
+
+.city-name {
+  font-family: var(--city-font);
+  font-weight: var(--city-font-weight);
+  margin-bottom: 8px;
+}
+
+#taipei-time {
+  font-size: var(--font-size-taipei);
+  margin-bottom: var(--spacing-taipei);
+}
+
+#ny-time {
+  font-size: var(--font-size-ny);
+  margin-bottom: var(--spacing-ny);
+}
+
+#london-time {
+  font-size: var(--font-size-london);
+  margin-bottom: var(--spacing-london);
+}
+
   </style>
 </head>
 <body>
-  <div class="controls" id="controls">
-    <label>背景: <input type="color" id="bgColor" value="#000000"></label>
-    <label>文字: <input type="color" id="textColor" value="#00FFCC"></label>
-    <label>大小(px): <input type="number" id="fontSize" value="64" min="10" max="200"></label>
-    <label>Taipei 色: <input type="color" id="taipeiColor" value="#00FFCC"></label>
-    <label>Taipei 字體:
-      <select id="taipeiFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
-    </label>
-    <label>New York 色: <input type="color" id="newyorkColor" value="#00FFCC"></label>
-    <label>New York 字體:
-      <select id="newyorkFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
-    </label>
-    <label>London 色: <input type="color" id="londonColor" value="#00FFCC"></label>
-    <label>London 字體:
-      <select id="londonFont"><option>Arial</option><option>Courier New</option><option>Georgia</option><option>Verdana</option></select>
-    </label>
-    
-<label>Taipei 字體大小(px): <input type="number" id="taipeiSize" value="64" min="10" max="200"></label>
-<label>Taipei 間距(px): <input type="number" id="taipeiGap" value="100" min="0" max="500"></label>
-<label>New York 字體大小(px): <input type="number" id="newyorkSize" value="64" min="10" max="200"></label>
-<label>New York 間距(px): <input type="number" id="newyorkGap" value="100" min="0" max="500"></label>
-<label>London 字體大小(px): <input type="number" id="londonSize" value="64" min="10" max="200"></label>
-<label>London 間距(px): <input type="number" id="londonGap" value="100" min="0" max="500"></label>
-
-<label>London 粗細:
-      <select id="londonWeight"><option>normal</option><option>bold</option><option>lighter</option></select>
-    </label>
-    <label>間距(px): <input type="number" id="gapSize" value="100" min="0" max="500"></label>
-    <button onclick="toggleFullscreen()">切換全螢幕</button>
-    <button onclick="toggleUI()">顯示/隱藏設定</button>
-  </div>
-
-  <div class="clock-container">
-    <div class="time-box"><div class="city" id="taipeiLabel">Taipei</div><div id="taipei" class="time">--:--:--</div></div>
-    <div class="time-box"><div class="city" id="newyorkLabel">New York</div><div id="newyork" class="time">--:--:--</div></div>
-    <div class="time-box"><div class="city" id="londonLabel">London</div><div id="london" class="time">--:--:--</div></div>
-  </div>
-
-  <script>
-    function updateTime() {
-      const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-      document.getElementById('taipei').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'Asia/Taipei' });
-      document.getElementById('newyork').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'America/New_York' });
-      document.getElementById('london').textContent = new Date().toLocaleTimeString('en-US', { ...options, timeZone: 'Europe/London' });
-    }
-
-    setInterval(updateTime, 1000);
-    updateTime();
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    function toggleUI() {
-      document.getElementById('controls').classList.toggle('hidden');
-    }
-  </script>
-</body>
-</html>
+  <div class="panel" id="controlPanel">
+    <label>背景顏色：<input type="color" id="bgColor"></label><br>
+    <label>字體顏色：<input type="color" id="fontColor"></label><br>
+    <label>城市字體：<input type="text" id="cityFont" value="Arial"></label><br>
+    <label>粗細：<input type="number" id="cityFontWeight" value="400" step="100"></label><br>
+    <button onclick="toggleFullscreen()">全螢幕</button>
+    <button onclick="togglePanel()">隱藏面板</button>
+    <button onclick="saveSettings()">儲存設定</button>
+  </div> <div class="clock">
+    <div class="city-name" style="color: var(--font-color)">Taipei</div>
+    <div id="tai
