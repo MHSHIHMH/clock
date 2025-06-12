@@ -72,6 +72,8 @@
       <select id="londonWeight"><option>normal</option><option>bold</option><option>lighter</option></select>
     </label>
     <label>間距(px): <input type="number" id="gapSize" value="100" min="0" max="500"></label>
+    <button onclick="toggleFullscreen()">切換全螢幕</button>
+    <button onclick="toggleUI()">顯示/隱藏設定</button>
   </div>
 
   <div class="clock-container">
@@ -156,6 +158,18 @@
         document.getElementById('londonWeight').value = saved.londonWeight;
         applySettings();
       }
+    }
+  
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function toggleUI() {
+      document.getElementById('controls').classList.toggle('hidden');
     }
   </script>
 </body>
