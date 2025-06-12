@@ -61,7 +61,7 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
   </style>
 </head>
@@ -160,11 +160,10 @@
     }
 
     function togglePanel() {
-      const panel = document.getElementById('settings');
-      panel.classList.toggle('hidden');
+      const controls = document.getElementById('controls');
+      controls.classList.toggle('hidden');
     }
 
-    // 載入儲存設定
     window.onload = () => {
       if (localStorage.timeFontSize) setTimeFontSize(localStorage.timeFontSize);
       if (localStorage.cityFontSize) setCityFontSize(localStorage.cityFontSize);
