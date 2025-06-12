@@ -5,77 +5,93 @@
   <title>Multi-Timezone Clock</title>
   <style>
     :root {
-      --bg-color: #000;
-      --font-color: #fff;
-      --font-size-taipei: 48px;
-      --font-size-ny: 48px;
-      --font-size-london: 48px;
-      --spacing-taipei: 20px;
-      --spacing-ny: 20px;
-      --spacing-london: 20px;
-      --city-font: 'Arial';
-      --city-font-weight: 400;
+      --bg-color: #111;
+      --city-color: #ccc;
+      --time-color: #fff;
+      --font-size-city: 1.5rem;
+      --font-size-time: 2.5rem;
+      --font-weight-city: 600;
+      --font-weight-time: 700;
+      --gap: 50px;
     }body {
   margin: 0;
-  background-color: var(--bg-color);
-  color: var(--font-color);
+  padding: 0;
   font-family: sans-serif;
+  background-color: var(--bg-color);
+  color: var(--time-color);
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100vh;
 }
 
-.panel {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
+.clock-container {
+  display: flex;
+  gap: var(--gap);
 }
 
 .clock {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 10px;
+  text-align: center;
 }
 
-.city-name {
-  font-family: var(--city-font);
-  font-weight: var(--city-font-weight);
-  margin-bottom: 8px;
+.city {
+  font-size: var(--font-size-city);
+  font-weight: var(--font-weight-city);
+  color: var(--city-color);
 }
 
-#taipei-time {
-  font-size: var(--font-size-taipei);
-  margin-bottom: var(--spacing-taipei);
+.time {
+  font-size: var(--font-size-time);
+  font-weight: var(--font-weight-time);
+  color: var(--time-color);
 }
 
-#ny-time {
-  font-size: var(--font-size-ny);
-  margin-bottom: var(--spacing-ny);
+#controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  z-index: 999;
 }
 
-#london-time {
-  font-size: var(--font-size-london);
-  margin-bottom: var(--spacing-london);
+#controls.hidden {
+  display: none;
 }
 
   </style>
 </head>
 <body>
-  <div class="panel" id="controlPanel">
-    <label>背景顏色：<input type="color" id="bgColor"></label><br>
-    <label>字體顏色：<input type="color" id="fontColor"></label><br>
-    <label>城市字體：<input type="text" id="cityFont" value="Arial"></label><br>
-    <label>粗細：<input type="number" id="cityFontWeight" value="400" step="100"></label><br>
-    <button onclick="toggleFullscreen()">全螢幕</button>
-    <button onclick="togglePanel()">隱藏面板</button>
-    <button onclick="saveSettings()">儲存設定</button>
-  </div> <div class="clock">
-    <div class="city-name" style="color: var(--font-color)">Taipei</div>
-    <div id="tai
+  <div class="clock-container">
+    <div class="clock">
+      <div class="city">Taipei</div>
+      <div class="time" id="taipei-time"></div>
+    </div>
+    <div class="clock">
+      <div class="city">New York</div>
+      <div class="time" id="newyork-time"></div>
+    </div>
+    <div class="clock">
+      <div class="city">London</div>
+      <div class="time" id="london-time"></div>
+    </div>
+  </div> <div id="controls">
+    <button onclick="toggleFullscreen()">Toggle Fullscreen</button>
+    <button onclick="toggleControls()">Toggle Controls</button>
+    <!-- Add sliders or input fields here for customization -->
+  </div> <script>
+    const taipeiOffset = 8;
+    const newYorkOffset = -4; // Adjust for DST if needed
+    const londonOffset = 1; // Adjust for DST if needed
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('taipei-time').textContent = getTimeForOffset(now, taipeiOffset);
+      document.getElementById('newyork-time').textContent = getTimeForOffset(now, newYorkOffset);
+      document.getElementById('london-time').textContent = getTimeForOffset(now, londonOffset);
+    }
+
+    function getTimeForOffset(baseTime, offset) {
+      const utc = baseTime.getTime() + baseTime.getTimezoneOffset() * 60000;
+      const time = new Date
